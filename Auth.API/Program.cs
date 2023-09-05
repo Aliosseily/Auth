@@ -1,5 +1,6 @@
 using Auth.API.Extensions;
-using Microsoft.Extensions.Configuration;
+using Auth.API.Middlewares;
+using Auth.Core.OptionsSetup;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -12,8 +13,11 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddApplicationServices(configuration);
+builder.Services.AddIdentityServices(configuration);
 
+builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 var app = builder.Build();
 
@@ -23,6 +27,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 

@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Infrastructure.Persistence.EntityModels.Authentication
+namespace Auth.Core.Entities.Authentication
 {
-	// Owned means that this table is owned by another table (AppUser)
-	// this will also add an autoincrement primary key Id to the table
 	[Owned]
 	public class RefreshToken
 	{
