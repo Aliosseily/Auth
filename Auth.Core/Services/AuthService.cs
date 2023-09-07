@@ -24,5 +24,10 @@ namespace Auth.Core.Services
 		{
 			return await _repository.Login(loginDto);
 		}
+
+		public async Task<UserDto> Register(RegisterDto registerDto)
+		{
+			return await _repository.Register(registerDto);
+		}
 	}
 }

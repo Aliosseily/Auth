@@ -23,5 +23,13 @@ namespace Auth.API.Controllers
 			return await _service.Login(loginDto);
 		}
 
+		[HttpPost("register")]
+		public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+		{
+			return await _service.Register(registerDto);
+		}
+
+
+
 	}
 }

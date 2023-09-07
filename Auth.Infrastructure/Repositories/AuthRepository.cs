@@ -7,6 +7,7 @@ using Auth.Core.Interfaces.Repositories;
 using AutoMapper.Execution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -69,9 +70,34 @@ namespace Auth.Infrastructure.Repositories
 			throw new NotImplementedException();
 		}
 
-		public Task<UserDto> Register(RegisterDto registerDto)
+		public async Task<UserDto> Register(RegisterDto registerDto)
 		{
-			throw new NotImplementedException();
+			if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+			{
+				throw new BadRequestException("Email taken");
+			}
+			if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
+			{
+				throw new BadRequestException("Username taken");
+			}
+
+			var user = new AppUser
+			{
+				DisplayName = registerDto.DisplayName,
+				Email = registerDto.Email,
+				UserName = registerDto.Username,
+			};
+
+			var result = await _userManager.CreateAsync(user, registerDto.Password);
+			if (result.Succeeded)
+			{
+				var res = await CreateUserObject(user);
+				SetRefreshTokenInCookie(res.RefreshToken, res.RefreshTokenExpiration);
+				return res;
+			}
+
+			throw new BadRequestException("Problem registering user");
+
 		}
 
 
@@ -85,7 +111,7 @@ namespace Auth.Infrastructure.Repositories
 				Token = _jwtProvider.Generate(user),
 				Username = user.UserName,
 			};
-			if (user.RefreshTokens.Any(t => t.IsActive))
+			if (user.RefreshTokens != null && user.RefreshTokens.Any(t => t.IsActive))
 			{
 				var activeRefreshToken = user.RefreshTokens.FirstOrDefault(t => t.IsActive);
 				res.RefreshToken = activeRefreshToken?.Token;
@@ -97,7 +123,7 @@ namespace Auth.Infrastructure.Repositories
 				res.RefreshToken = refreshToken?.Token;
 				res.RefreshTokenExpiration = refreshToken.ExpiresOn;
 				user.RefreshTokens.Add(refreshToken);
-				await _userManager.UpdateAsync(user);
+				await _userManager.UpdateAsync(user);				
 			}
 
 			return res;

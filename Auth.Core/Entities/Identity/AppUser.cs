@@ -7,6 +7,6 @@ namespace Auth.Core.Entities.Identity
 	public class AppUser : IdentityUser
 	{
 		public string DisplayName { get; set; } = string.Empty;
-		public List<RefreshToken>? RefreshTokens { get; set; }
+		public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 	}
 }

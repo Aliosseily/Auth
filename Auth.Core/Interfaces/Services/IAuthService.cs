@@ -10,5 +10,6 @@ namespace Auth.Core.Interfaces.Services
 	public interface IAuthService
 	{
 		Task<UserDto> Login(LoginDto loginDto);
+		Task<UserDto> Register(RegisterDto registerDto);
 	}
 }
