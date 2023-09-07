@@ -29,6 +29,13 @@ namespace Auth.API.Controllers
 			return await _service.Register(registerDto);
 		}
 
+		[HttpGet("refreshToken")]
+		public async Task<ActionResult<UserDto>> RefreshToken()
+		{
+			var refreshToken = "dfdfdfdf"; //Request.Cookies["refreshToken"];
+			return await _service.RefreshToken(refreshToken);
+		}
+
 
 
 	}

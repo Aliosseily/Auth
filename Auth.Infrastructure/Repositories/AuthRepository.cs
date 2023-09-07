@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,20 +66,52 @@ namespace Auth.Infrastructure.Repositories
 			return new UserDto();
 		}
 
-		public Task<UserDto> RefreshToken()
+		public async Task<UserDto> RefreshToken(string token)
 		{
-			throw new NotImplementedException();
+			var userDto = new UserDto();
+
+			// get the user of this token
+			var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+			if (user is null)
+			{
+				throw new UnauthorizedException("Invalid Token", 401);
+			}
+
+			var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+			if (!refreshToken.IsActive)
+			{
+				throw new UnauthorizedException("Inactive Token", 401);
+			}
+
+			// revoke the old refreshtoken
+			refreshToken.RevokedOn = DateTime.UtcNow.ToLocalTime();
+
+			// create new refresh token
+			var newRefreshToken = GenerateRefreshToken();
+
+			// add the new refresh token to database as new record
+			user.RefreshTokens.Add(newRefreshToken);
+			await _userManager.UpdateAsync(user);
+
+			var res = await CreateUserObject(user);
+
+			SetRefreshTokenInCookie(res.RefreshToken, res.RefreshTokenExpiration);
+
+			return res;
+
 		}
 
 		public async Task<UserDto> Register(RegisterDto registerDto)
 		{
 			if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
 			{
-				throw new BadRequestException("Email taken");
+				throw new BadRequestException("Email taken", 400);
 			}
 			if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
 			{
-				throw new BadRequestException("Username taken");
+				throw new BadRequestException("Username taken", 400);
 			}
 
 			var user = new AppUser
@@ -96,7 +129,7 @@ namespace Auth.Infrastructure.Repositories
 				return res;
 			}
 
-			throw new BadRequestException("Problem registering user");
+			throw new BadRequestException("Problem registering user", 400);
 
 		}
 

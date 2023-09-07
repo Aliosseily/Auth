@@ -13,8 +13,6 @@ namespace Auth.Core.Entities.DTOs
 		public string Username { get; set; } = string.Empty;
 		public string Token { get; set; } = string.Empty;
 		public string Image { get; set; } = string.Empty;
-		public string Message { get; set; } = string.Empty;
-
 
 		// To prevent return this property with the response
 		[JsonIgnore]
