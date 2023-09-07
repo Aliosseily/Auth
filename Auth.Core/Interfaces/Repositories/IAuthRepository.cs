@@ -13,7 +13,6 @@ namespace Auth.Core.Interfaces.Repositories
 	{
 		Task<UserDto>Login(LoginDto loginDto);
 		Task<UserDto> Register(RegisterDto registerDto);
-		Task<UserDto> GetCurrentUser();
 		Task<UserDto> RefreshToken(string refreshToken);
 
 	}

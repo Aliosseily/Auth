@@ -23,7 +23,6 @@ namespace Auth.Infrastructure.Repositories
 	{
 
 		private readonly UserManager<AppUser> _userManager;
-		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly SignInManager<AppUser> _signInManager;
 		private readonly IJwtProvider _jwtProvider;
 		private readonly IHttpContextAccessor _httpContextAccessor;
@@ -33,15 +32,10 @@ namespace Auth.Infrastructure.Repositories
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
-			_roleManager = roleManager;
 			_jwtProvider = jwtProvider;
 			_httpContextAccessor = httpContextAccessor;
 		}
 
-		public Task<UserDto> GetCurrentUser()
-		{
-			throw new NotImplementedException();
-		}
 
 		public async Task<UserDto> Login(LoginDto loginDto)
 		{
