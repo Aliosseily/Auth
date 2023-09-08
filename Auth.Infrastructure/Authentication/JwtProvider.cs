@@ -1,6 +1,6 @@
-﻿using Auth.Core.Entities.Identity;
-using Auth.Core.Interfaces.Authentication;
-using Auth.Core.OptionsSetup;
+﻿using Auth.Core.Authentication.Jwt;
+using Auth.Core.Entities.Identity;
+using Auth.Core.Interfaces.Authentication.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Auth.Infrastructure.Authentication
 {
-	public class JwtProvider : IJwtProvider
+    public class JwtProvider : IJwtProvider
 	{
 		private readonly JwtOptions _options;
 

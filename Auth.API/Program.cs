@@ -1,12 +1,13 @@
 using Auth.API.Extensions;
 using Auth.API.Middlewares;
-using Auth.Core.OptionsSetup;
+using Auth.Core.Authentication.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -19,7 +20,19 @@ builder.Services.ConfigureOptions<JwtOptionsSetup>();
 
 builder.Services.AddTransient<ExceptionMiddleware>();
 
+
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+	options.Configuration = "localhost:6379";
+	options.InstanceName = "MyRedisCache";
+});
+
+
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -31,6 +44,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

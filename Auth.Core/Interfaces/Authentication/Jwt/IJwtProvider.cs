@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Auth.Core.Interfaces.Authentication
+namespace Auth.Core.Interfaces.Authentication.Jwt
 {
-	public interface IJwtProvider
-	{
-		string Generate(AppUser user);
-	}
+    public interface IJwtProvider
+    {
+        string Generate(AppUser user);
+    }
 }

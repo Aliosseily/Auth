@@ -2,12 +2,14 @@
 using Auth.Core.Entities.DTOs;
 using Auth.Core.Entities.Identity;
 using Auth.Core.Exceptions;
-using Auth.Core.Interfaces.Authentication;
+using Auth.Core.Interfaces.Authentication.Identity;
+using Auth.Core.Interfaces.Authentication.Jwt;
 using Auth.Core.Interfaces.Repositories;
 using AutoMapper.Execution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -19,21 +21,24 @@ using System.Threading.Tasks;
 
 namespace Auth.Infrastructure.Repositories
 {
-	public class AuthRepository : IAuthRepository
+    public class AuthRepository : IAuthRepository
 	{
 
 		private readonly UserManager<AppUser> _userManager;
 		private readonly SignInManager<AppUser> _signInManager;
 		private readonly IJwtProvider _jwtProvider;
 		private readonly IHttpContextAccessor _httpContextAccessor;
+		private readonly IServiceScopeFactory _serviceScopeFactory;
 
-		public AuthRepository(RoleManager<IdentityRole> roleManager,UserManager<AppUser> userManager,
+
+		public AuthRepository(RoleManager<IdentityRole> roleManager,UserManager<AppUser> userManager, IServiceScopeFactory serviceScopeFactory,
 			SignInManager<AppUser> signInManager, IJwtProvider jwtProvider, IHttpContextAccessor httpContextAccessor)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_jwtProvider = jwtProvider;
 			_httpContextAccessor = httpContextAccessor;
+			_serviceScopeFactory = serviceScopeFactory;
 		}
 
 
@@ -54,6 +59,16 @@ namespace Auth.Infrastructure.Repositories
 				{
 					SetRefreshTokenInCookie(res.RefreshToken, res.RefreshTokenExpiration);
 				}
+
+				if (!Guid.TryParse(loggedInUser.Id, out Guid parsedMemberId))
+				{
+					throw new NotFoundException("user", loggedInUser.Email);
+				}
+				using IServiceScope scope = _serviceScopeFactory.CreateScope();
+				IPermissionsService permissionsService = scope.ServiceProvider
+					.GetRequiredService<IPermissionsService>();
+
+				await permissionsService.GetPermissionAsync(parsedMemberId);
 
 				return res;
 			}
