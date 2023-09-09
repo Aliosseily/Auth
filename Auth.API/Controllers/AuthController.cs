@@ -1,5 +1,6 @@
 ﻿using Auth.Core.Entities.DTOs;
 using Auth.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,7 +37,7 @@ namespace Auth.API.Controllers
 			return await _service.RefreshToken(refreshToken);
 		}
 
-
+		[Authorize]
 		[HttpPost("logout")]
 		public async Task<ActionResult<bool>> Logout()
 		{

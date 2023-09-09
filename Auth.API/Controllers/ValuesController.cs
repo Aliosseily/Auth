@@ -3,6 +3,8 @@ using Auth.Core.Entities.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
+using static Auth.API.Controllers.ValuesController;
 
 namespace Auth.API.Controllers
 {
@@ -27,6 +29,20 @@ namespace Auth.API.Controllers
 				new ValuesData{Id = 3, Name="value3"},
 			};
 		}
+
+
+		[Authorize]
+		[HttpGet("getValue")]
+		public async Task<ActionResult<ValuesData>> GetValue()
+		{
+			return new ValuesData { Id = 1, Name = "value1" };			
+		}
+
 	}
+
+
+
+
+
 
 }
