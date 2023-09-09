@@ -32,8 +32,15 @@ namespace Auth.API.Controllers
 		[HttpGet("refreshToken")]
 		public async Task<ActionResult<UserDto>> RefreshToken()
 		{
-			var refreshToken = "dfdfdfdf"; //Request.Cookies["refreshToken"];
+			var refreshToken = Request.Cookies["refreshToken"];
 			return await _service.RefreshToken(refreshToken);
+		}
+
+
+		[HttpPost("logout")]
+		public async Task<ActionResult<bool>> Logout()
+		{
+			return await _service.Logout();
 		}
 
 

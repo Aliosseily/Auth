@@ -9,6 +9,7 @@ using AutoMapper.Execution;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -29,16 +30,18 @@ namespace Auth.Infrastructure.Repositories
 		private readonly IJwtProvider _jwtProvider;
 		private readonly IHttpContextAccessor _httpContextAccessor;
 		private readonly IServiceScopeFactory _serviceScopeFactory;
+		private readonly IDistributedCache _distributedCache;
 
 
 		public AuthRepository(RoleManager<IdentityRole> roleManager,UserManager<AppUser> userManager, IServiceScopeFactory serviceScopeFactory,
-			SignInManager<AppUser> signInManager, IJwtProvider jwtProvider, IHttpContextAccessor httpContextAccessor)
+			SignInManager<AppUser> signInManager, IJwtProvider jwtProvider, IHttpContextAccessor httpContextAccessor, IDistributedCache distributedCache)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_jwtProvider = jwtProvider;
 			_httpContextAccessor = httpContextAccessor;
 			_serviceScopeFactory = serviceScopeFactory;
+			_distributedCache = distributedCache;
 		}
 
 
@@ -73,6 +76,27 @@ namespace Auth.Infrastructure.Repositories
 				return res;
 			}
 			return new UserDto();
+		}
+
+		public async Task<bool> Logout()
+		{
+
+			var user = _httpContextAccessor.HttpContext.User;
+
+			await _signInManager.SignOutAsync();
+
+			if (user.Identity.IsAuthenticated)
+			{
+				string userId = user.FindFirst("id")?.Value;
+
+				if (!string.IsNullOrEmpty(userId))
+				{
+					string cacheKey = $"Permissions_{userId}";
+					await _distributedCache.RemoveAsync(cacheKey);
+				}
+			}
+
+			return true;
 		}
 
 		public async Task<UserDto> RefreshToken(string token)

@@ -16,11 +16,9 @@ namespace Auth.Core.Authentication.filters
 		// we can inject directly the IPermissionsService, beacuse we are going to be registering the
 		// permission authorization handler as a singelton 
 
-		private readonly IServiceScopeFactory _serviceScopeFactory;
 		private readonly IDistributedCache _distributedCache;
-		public PermissionAuthorizationHandler(IServiceScopeFactory serviceScopeFactory, IDistributedCache distributedCache)
+		public PermissionAuthorizationHandler(IDistributedCache distributedCache)
 		{
-			_serviceScopeFactory = serviceScopeFactory;
 			_distributedCache = distributedCache;
 		}
 
@@ -40,7 +38,7 @@ namespace Auth.Core.Authentication.filters
 			var cacheKey = $"Permissions_{parsedMemberId}";
 			var cachedPermissions = await _distributedCache.GetStringAsync(cacheKey);
 
-			if (cachedPermissions.Contains(requirement.Permission))
+			if (cachedPermissions is not null && cachedPermissions.Contains(requirement.Permission))
 			{
 				context.Succeed(requirement);
 			}

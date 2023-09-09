@@ -14,6 +14,6 @@ namespace Auth.Core.Interfaces.Repositories
 		Task<UserDto>Login(LoginDto loginDto);
 		Task<UserDto> Register(RegisterDto registerDto);
 		Task<UserDto> RefreshToken(string refreshToken);
-
+		Task<bool> Logout();
 	}
 }
