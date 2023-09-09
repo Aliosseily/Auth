@@ -108,14 +108,14 @@ namespace Auth.Infrastructure.Repositories
 
 			if (user is null)
 			{
-				throw new UnauthorizedException("Invalid Token", 401);
+				throw new UnauthorizedException("Invalid Token");
 			}
 
 			var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
 
 			if (!refreshToken.IsActive)
 			{
-				throw new UnauthorizedException("Inactive Token", 401);
+				throw new UnauthorizedException("Inactive Token");
 			}
 
 			// revoke the old refreshtoken
@@ -140,11 +140,11 @@ namespace Auth.Infrastructure.Repositories
 		{
 			if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
 			{
-				throw new BadRequestException("Email taken", 400);
+				throw new BadRequestException("Email taken");
 			}
 			if (await _userManager.Users.AnyAsync(x => x.UserName == registerDto.Username))
 			{
-				throw new BadRequestException("Username taken", 400);
+				throw new BadRequestException("Username taken");
 			}
 
 			var user = new AppUser
@@ -162,7 +162,7 @@ namespace Auth.Infrastructure.Repositories
 				return res;
 			}
 
-			throw new BadRequestException("Problem registering user", 400);
+			throw new BadRequestException("Problem registering user");
 
 		}
 

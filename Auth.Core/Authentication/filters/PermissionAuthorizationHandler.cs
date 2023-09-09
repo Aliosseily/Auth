@@ -32,7 +32,7 @@ namespace Auth.Core.Authentication.filters
 
 			if (!Guid.TryParse(membrId, out Guid parsedMemberId))
 			{
-				throw new UnauthorizedException("Invalid token", 401);
+				throw new UnauthorizedException("Invalid token");
 			}
 
 			var cacheKey = $"Permissions_{parsedMemberId}";

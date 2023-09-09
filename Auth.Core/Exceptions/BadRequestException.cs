@@ -8,16 +8,9 @@ namespace Auth.Core.Exceptions
 {
 	public class BadRequestException : ApplicationException
 	{
-		public int StatusCode { get; }
-		public BadRequestException(string message, int statusCode)
-			: base(message)
-		{
-			StatusCode = statusCode;
-		}
-
-		public BadRequestException(string message, Exception innerException)
-			: base(message, innerException)
-		{
-		}
+		public BadRequestException(string message)
+			:base(message) 
+		{ 
+		}	
 	}
 }
