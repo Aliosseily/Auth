@@ -62,12 +62,12 @@ namespace Auth.Core.Authentication.Identity
 			}
 
 			var serializedPermissions = JsonSerializer.Serialize(permissions);
-			var cacheOptions = new DistributedCacheEntryOptions
-			{
-				AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) // Cache for 30 minutes
-			};
+			//var cacheOptions = new DistributedCacheEntryOptions
+			//{
+			//	AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) // Cache for 30 minutes
+			//};
 
-			await _distributedCache.SetStringAsync(cacheKey, serializedPermissions, cacheOptions);
+			await _distributedCache.SetStringAsync(cacheKey, serializedPermissions);
 
 			return permissions;
 		}

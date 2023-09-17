@@ -1,10 +1,23 @@
 using Auth.API.Extensions;
 using Auth.API.Middlewares;
 using Auth.Core.Authentication.Jwt;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 // Add services to the container.
+
+
+// Read configuration from appsettings.json
+var serilogConfiguration = new ConfigurationBuilder()
+	.AddJsonFile("appsettings.json")
+	.Build();
+
+Log.Logger = new LoggerConfiguration()
+	.ReadFrom.Configuration(serilogConfiguration)
+	.CreateLogger();
+
+
 
 builder.Services.AddControllers();
 
@@ -48,6 +61,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseMiddleware<SensitiveEndpointLoggingMiddleware>();
+
 
 app.MapControllers();
 

@@ -1,4 +1,5 @@
 ﻿using Auth.Core.Authentication.Identity;
+using Auth.Core.CustomAttributes;
 using Auth.Core.Entities.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -18,8 +19,10 @@ namespace Auth.API.Controllers
 			public string Name { get; set; } = string.Empty;
 		}
 
-		[HasPermission(Permission.ViewProduct)]
+		//[HasPermission(Permission.ViewProduct)]
+		[Authorize]
 		[HttpGet("getValues")]
+		[LogSensitiveAction]
 		public async Task<ActionResult<List<ValuesData>>> GetValues()
 		{
 			return new List<ValuesData>()
@@ -31,7 +34,7 @@ namespace Auth.API.Controllers
 		}
 
 
-		[Authorize]
+		//[Authorize]
 		[HttpGet("getValue")]
 		public async Task<ActionResult<ValuesData>> GetValue()
 		{
