@@ -1,5 +1,6 @@
 ﻿using Auth.Core.Authentication.filters;
 using Auth.Core.Authentication.Identity;
+using Auth.Core.Filters;
 using Auth.Core.Interfaces.Authentication.Identity;
 using Auth.Core.Interfaces.Repositories;
 using Auth.Core.Interfaces.Services;
@@ -17,6 +18,7 @@ namespace Auth.API.Extensions
 		public static IServiceCollection AddApplicationServices(this IServiceCollection services,
 			IConfiguration config)
 		{
+			services.AddScoped<LogActionFilter>();
 			services.AddScoped<IPermissionsService, PermissionService>();
 			services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 			services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();

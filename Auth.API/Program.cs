@@ -61,7 +61,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
-app.UseMiddleware<SensitiveEndpointLoggingMiddleware>();
+//app.UseMiddleware<SensitiveEndpointLoggingMiddleware>();
 
 
 app.MapControllers();
